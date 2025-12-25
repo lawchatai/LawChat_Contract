@@ -200,7 +200,6 @@ def generate_r2_signed_url(object_key: str, expires_in=300, download=False):
         ExpiresIn=expires_in,
     )
 
-
 @nda_bp.route("/document/<document_id>")
 @audit_log("document view/download")
 def open_document(document_id):
@@ -225,63 +224,24 @@ def open_document(document_id):
     action = request.args.get("action", "view")
     is_download = action == "download"
 
-    # ==================================
-    # 🌐 OLD PUBLIC URL (Backward Compatible)
-    # ==================================
-    if file_path.startswith("http"):
-        if is_download:
-            return redirect(
-                f"{file_path}?response-content-disposition=attachment"
-            )
-        return redirect(file_path)
+    # ----------------------------------
+    # 🔐 R2 OBJECT → SIGNED URL
+    # ----------------------------------
+    if not file_path.startswith("http"):
+        signed_url = generate_r2_signed_url(
+            object_key=file_path,
+            expires_in=300,
+            download=is_download
+        )
+        return redirect(signed_url)
 
-    # ==================================
-    # 🔐 PRIVATE R2 OBJECT → SIGNED URL
-    # ==================================
-    signed_url = generate_r2_signed_url(
-        object_key=file_path,
-        expires_in=300,  # 5 minutes
-        download=is_download
-    )
+    # ----------------------------------
+    # 🌐 OLD PUBLIC URL (VIEW ONLY)
+    # ----------------------------------
+    if is_download:
+        abort(400, description="Download not supported for legacy documents")
 
-    return redirect(signed_url)
-
-
-# @nda_bp.route("/document/<document_id>")
-# @audit_log("document view/download")
-# def open_document(document_id):
-#     if not g.user:
-#         abort(401)
-#
-#     user_id = ObjectId(g.user["_id"])
-#
-#     doc = document_history.find_one({
-#         "_id": ObjectId(document_id),
-#         "user_id": user_id,
-#         "status": "active"
-#     })
-#
-#     if not doc:
-#         abort(404)
-#
-#     file_path = doc.get("file_path")
-#     if not file_path:
-#         abort(404)
-#
-#     abs_path = os.path.abspath(file_path)
-#     if not os.path.exists(abs_path):
-#         abort(404)
-#
-#     # 🔑 action flag
-#     action = request.args.get("action", "view")
-#
-#     return send_file(
-#         abs_path,
-#         mimetype="application/pdf",
-#         as_attachment=(action == "download"),
-#         download_name=f"{doc.get('document_type', 'document')}.pdf"
-#     )
-
+    return redirect(file_path)
 
 @nda_bp.route("/document/<doc_id>/delete", methods=["POST"])
 @audit_log("document_deleted")
