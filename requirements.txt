@@ -1,0 +1,6 @@
+flask
+flask-session
+playwright
+pymongo
+dnspython
+python-dotenv
