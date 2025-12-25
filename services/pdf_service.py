@@ -13,6 +13,8 @@ R2_ACCESS_KEY_ID = os.getenv("R2_ACCESS_KEY_ID")
 R2_SECRET_ACCESS_KEY = os.getenv("R2_SECRET_ACCESS_KEY")
 R2_BUCKET_NAME = os.getenv("R2_BUCKET_NAME")
 R2_PUBLIC_BASE_URL = os.getenv("R2_PUBLIC_BASE_URL")  # optional
+PDF_SERVICE_URL = os.getenv("PDF_SERVICE_URL")
+PDF_SERVICE_TOKEN = os.getenv("PDF_SERVICE_TOKEN")
 
 r2_client = boto3.client(
     "s3",
@@ -27,11 +29,12 @@ class PDFGenerationError(Exception):
     pass
 
 
-PDF_SERVICE_URL = os.getenv("PDF_SERVICE_URL")
-PDF_SERVICE_TOKEN = os.getenv("PDF_SERVICE_TOKEN")
+class PDFServiceError(Exception):
+    pass
 
 class PDFServiceError(Exception):
     pass
+
 
 def generate_pdf_remote(html: str) -> bytes:
     if not PDF_SERVICE_URL or not PDF_SERVICE_TOKEN:
@@ -43,18 +46,27 @@ def generate_pdf_remote(html: str) -> bytes:
             json={"html": html},
             headers={
                 "X-INTERNAL-TOKEN": PDF_SERVICE_TOKEN,
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
-            timeout=60
+            timeout=60,
         )
-        resp.raise_for_status()
+
+        if resp.status_code != 200:
+            raise PDFServiceError(
+                f"PDF service error {resp.status_code}: {resp.text[:300]}"
+            )
+
+        if not resp.content:
+            raise PDFServiceError("Empty PDF response")
+
         return resp.content
 
     except requests.exceptions.Timeout:
         raise PDFServiceError("PDF service timeout")
 
     except requests.exceptions.RequestException as e:
-        raise PDFServiceError(str(e))
+        raise PDFServiceError(f"PDF service request failed: {str(e)}")
+
 
 
 BASE_PDF_PATH = "storage/nda_pdfs"
