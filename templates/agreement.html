@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Select Agreement | LawChatAI</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0F172A',
+            accent: '#2563EB',
+            muted: '#F8FAFC',
+            border: '#E5E7EB'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-muted min-h-screen flex flex-col text-slate-800">
+
+<!-- HEADER -->
+<header class="bg-primary text-white sticky top-0 z-50 w-full">
+  <div class="max-w-7xl mx-auto px-4 min-h-[64px] flex justify-between items-center gap-4">
+
+    <!-- Left -->
+    <div>
+      <h1 class="text-lg md:text-xl font-semibold tracking-tight">
+        LawChatAI
+      </h1>
+      <span class="text-xs md:text-sm opacity-80 block">
+        Agreement Generator
+      </span>
+    </div>
+
+    <!-- Right -->
+    <a
+      href="{{ url_for('nda.my_documents') }}"
+      class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl
+             text-sm font-medium hover:bg-blue-700 transition"
+    >
+      📁
+      <span class="hidden sm:inline">My Documents</span>
+    </a>
+
+  </div>
+</header>
+
+
+<!-- MAIN -->
+<main class="flex-1 flex items-center justify-center px-4 py-10">
+
+  <div class="w-full max-w-5xl space-y-10">
+
+    <!-- CATEGORY SECTION -->
+    <section
+      id="categorySection"
+      class="bg-white rounded-3xl shadow-sm border border-border p-6 sm:p-10"
+    >
+      <h2 class="text-xl sm:text-2xl font-semibold text-center mb-2">
+        Choose Agreement Category
+      </h2>
+      <p class="text-center text-sm text-slate-500 mb-8">
+        Select the type of agreement you want to generate
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+        <!-- Contract Generator -->
+        <button
+          onclick="selectCategory('employment')"
+          class="group p-6 rounded-2xl border border-border hover:border-accent hover:shadow-md transition-all text-left"
+        >
+          <div class="flex items-start gap-4">
+            <div class="bg-accent/10 text-accent p-3 rounded-xl">
+              <i data-lucide="file-text"></i>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-lg">
+                Contract Generator
+              </h3>
+              <p class="text-sm text-slate-500 mt-1">
+                NDA, Employment Agreement, Rent Agreement, Service Agreement
+              </p>
+            </div>
+          </div>
+        </button>
+
+        <!-- Commercial -->
+        <button
+          onclick="selectCategory('commercial')"
+          class="group p-6 rounded-2xl border border-border hover:border-accent hover:shadow-md transition-all text-left"
+        >
+          <div class="flex items-start gap-4">
+            <div class="bg-accent/10 text-accent p-3 rounded-xl">
+              <i data-lucide="briefcase"></i>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-lg">
+                Commercial Agreements
+              </h3>
+              <p class="text-sm text-slate-500 mt-1">
+                Service, Vendor, Consulting Agreements
+              </p>
+            </div>
+          </div>
+        </button>
+
+      </div>
+    </section>
+
+    <!-- SUB CATEGORY SECTION -->
+    <section
+      id="subCategorySection"
+      class="hidden bg-white rounded-3xl shadow-sm border border-border p-6 sm:p-10"
+    >
+      <h2 class="text-xl sm:text-2xl font-semibold text-center mb-2">
+        Choose Agreement Type
+      </h2>
+      <p class="text-center text-sm text-slate-500 mb-8">
+        Select a specific agreement to continue
+      </p>
+
+      <div
+        id="subCategoryGrid"
+        class="grid grid-cols-1 sm:grid-cols-2 gap-6"
+      ></div>
+
+      <div class="text-center mt-8">
+        <button
+          onclick="goBack()"
+          class="inline-flex items-center gap-1 text-sm text-accent hover:underline"
+        >
+          ← Change Category
+        </button>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="text-center text-xs text-slate-500 py-6">
+  © 2025 LawChatAI.in · AI-powered legal drafts
+</footer>
+
+<!-- SCRIPT -->
+<script>
+  lucide.createIcons();
+
+  const categorySection = document.getElementById('categorySection');
+  const subCategorySection = document.getElementById('subCategorySection');
+  const subCategoryGrid = document.getElementById('subCategoryGrid');
+
+  const data = {
+    employment: [
+      { label: 'Employment NDA', url: '/nda?type=emp-nda', icon: 'lock' },
+      { label: 'Employment Agreement', url: '/employment-agreement', icon: 'user-check' }
+    ],
+    commercial: [
+      { label: 'Service Agreement', url: '/service-agreement', icon: 'settings' },
+      { label: 'Vendor Agreement', url: '/vendor-agreement', icon: 'truck' }
+    ]
+  };
+
+  function selectCategory(category) {
+    subCategoryGrid.innerHTML = '';
+
+    data[category].forEach(item => {
+      const btn = document.createElement('button');
+      btn.className =
+        'p-6 rounded-2xl border border-border hover:border-accent hover:shadow-md transition-all text-left';
+
+      btn.innerHTML = `
+        <div class="flex items-start gap-4">
+          <div class="bg-accent/10 text-accent p-3 rounded-xl">
+            <i data-lucide="${item.icon}"></i>
+          </div>
+          <div>
+            <h3 class="font-semibold text-lg">${item.label}</h3>
+            <p class="text-sm text-slate-500 mt-1">
+              Generate ${item.label}
+            </p>
+          </div>
+        </div>
+      `;
+
+      btn.onclick = () => window.location.href = item.url;
+      subCategoryGrid.appendChild(btn);
+    });
+
+    lucide.createIcons();
+    categorySection.classList.add('hidden');
+    subCategorySection.classList.remove('hidden');
+  }
+
+  function goBack() {
+    subCategorySection.classList.add('hidden');
+    categorySection.classList.remove('hidden');
+  }
+</script>
+
+</body>
+</html>

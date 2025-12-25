@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employee NDA Generator | LawChatAI</title>
+  <meta name="description" content="Generate professional Employee Non-Disclosure Agreements with our AI-powered legal document generator." />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: 'hsl(222, 47%, 11%)',
+              foreground: 'hsl(210, 40%, 98%)'
+            },
+            secondary: {
+              DEFAULT: 'hsl(217, 33%, 17%)',
+              foreground: 'hsl(210, 40%, 98%)'
+            },
+            accent: {
+              DEFAULT: 'hsl(217, 91%, 60%)',
+              foreground: 'hsl(210, 40%, 98%)'
+            },
+            muted: {
+              DEFAULT: 'hsl(210, 40%, 98%)',
+              foreground: 'hsl(215, 16%, 47%)'
+            },
+            border: 'hsl(214, 32%, 91%)',
+            input: 'hsl(214, 32%, 91%)',
+            ring: 'hsl(217, 91%, 60%)',
+            background: 'hsl(210, 40%, 98%)',
+            foreground: 'hsl(222, 47%, 11%)',
+            card: {
+              DEFAULT: 'hsl(0, 0%, 100%)',
+              foreground: 'hsl(222, 47%, 11%)'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          borderRadius: {
+            'xl': '0.75rem',
+            '2xl': '1rem',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    /* Custom focus styles */
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: hsl(217, 91%, 60%);
+      box-shadow: 0 0 0 3px hsla(217, 91%, 60%, 0.1);
+    }
+
+    /* Smooth transitions */
+    .step {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .step.hidden {
+      display: none;
+    }
+
+    /* Progress bar animation */
+    #progressBar {
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Button hover effects */
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px hsla(217, 91%, 60%, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background-color: hsl(210, 40%, 96%);
+    }
+
+    /* Card shadow */
+    .card {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Custom checkbox styling */
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid hsl(214, 32%, 91%);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .checkbox-item:hover {
+      background-color: hsl(210, 40%, 98%);
+      border-color: hsl(217, 91%, 60%);
+    }
+
+    .checkbox-item input[type="checkbox"]:checked + span {
+      color: hsl(217, 91%, 60%);
+    }
+
+    /* Custom radio styling */
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid hsl(214, 32%, 91%);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .radio-item:hover {
+      background-color: hsl(210, 40%, 98%);
+      border-color: hsl(217, 91%, 60%);
+    }
+
+    .radio-item input[type="radio"]:checked + span {
+      color: hsl(217, 91%, 60%);
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body class="bg-background text-foreground min-h-screen flex flex-col">
+
+<!-- HEADER -->
+<header class="bg-primary text-white sticky top-0 z-50 w-full">
+  <div class="max-w-7xl mx-auto px-4 min-h-[64px] flex justify-between items-center gap-4">
+
+    <!-- Left -->
+    <div>
+      <h1 class="text-lg md:text-xl font-semibold tracking-tight">
+        LawChatAI
+      </h1>
+      <span class="text-xs md:text-sm opacity-80 block">
+        Employee NDA Generator
+      </span>
+    </div>
+
+    <!-- Right -->
+    <a
+      href="{{ url_for('nda.my_documents') }}"
+      class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl
+             text-sm font-medium hover:bg-blue-700 transition"
+    >
+      📁
+      <span class="hidden sm:inline">My Documents</span>
+    </a>
+
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+
+  <!-- PROGRESS -->
+  <div class="mb-8">
+    <div class="flex justify-between items-center mb-3">
+      <p id="progressText" class="text-sm font-medium text-foreground"></p>
+      <p id="progressPercent" class="text-sm font-medium text-accent"></p>
+    </div>
+    <div class="w-full bg-border rounded-full h-2 overflow-hidden">
+      <div id="progressBar" class="bg-accent h-2 rounded-full" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <form id="ndaForm"
+      method="POST"
+      action="/nda/generate"
+      class="space-y-6">
+
+
+    <!-- STEP 1: Agreement Basics -->
+    <section class="step card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="1">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">📄</span>
+        <h2 class="text-xl font-semibold text-card-foreground">Agreement Basics</h2>
+      </div>
+
+      <div class="space-y-6">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-foreground">Agreement Title</label>
+          <input type="text" disabled value="Employee Confidentiality & Non-Disclosure Agreement"
+            class="w-full px-4 py-3 rounded-xl bg-muted border border-border text-muted-foreground cursor-not-allowed" />
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-foreground">Effective Date <span class="text-red-500">*</span></label>
+          <input type="date" name="effective_date" required
+            class="w-full px-4 py-3 rounded-xl border border-input bg-card text-foreground" />
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: Employer Details -->
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="2">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">🏢</span>
+        <h2 class="text-xl font-semibold text-card-foreground">Employer Details</h2>
+      </div>
+
+      <div class="space-y-6">
+        <div class="space-y-3">
+          <label class="block text-sm font-medium text-foreground">Employer Type <span class="text-red-500">*</span></label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="radio-item">
+              <input type="radio" name="employer_type" value="Company" class="w-4 h-4 text-accent" />
+              <span class="text-sm">Company</span>
+            </label>
+            <label class="radio-item">
+              <input type="radio" name="employer_type" value="LLP" class="w-4 h-4 text-accent" />
+              <span class="text-sm">LLP</span>
+            </label>
+            <label class="radio-item">
+              <input type="radio" name="employer_type" value="Partnership" class="w-4 h-4 text-accent" />
+              <span class="text-sm">Partnership</span>
+            </label>
+            <label class="radio-item">
+              <input type="radio" name="employer_type" value="Individual" class="w-4 h-4 text-accent" />
+              <span class="text-sm">Individual</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-foreground">Employer Name <span class="text-red-500">*</span></label>
+          <input type="text" name="employer_name" required placeholder="Enter employer/company name"
+            class="w-full px-4 py-3 rounded-xl border border-input bg-card text-foreground placeholder:text-muted-foreground" />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- STEP 3: Employee Details -->
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="3">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">👤</span>
+        <h2 class="text-xl font-semibold text-card-foreground">Employee Details</h2>
+      </div>
+
+      <div class="space-y-6">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-foreground">Employee Full Name <span class="text-red-500">*</span></label>
+          <input type="text" name="employee_name" required placeholder="Enter employee's full legal name"
+            class="w-full px-4 py-3 rounded-xl border border-input bg-card text-foreground placeholder:text-muted-foreground" />
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-foreground">Designation <span class="text-red-500">*</span></label>
+          <input type="text" name="designation" required placeholder="e.g., Software Engineer, Marketing Manager"
+            class="w-full px-4 py-3 rounded-xl border border-input bg-card text-foreground placeholder:text-muted-foreground" />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- STEP 4: Confidential Information -->
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="4">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">🔒</span>
+        <h2 class="text-xl font-semibold text-card-foreground">Confidential Information</h2>
+      </div>
+
+      <p class="text-sm text-muted-foreground mb-6">Select the types of confidential information to be protected:</p>
+
+      <div class="space-y-3">
+        <label class="checkbox-item">
+          <input type="checkbox" name="confidential[]" value="business" class="w-4 h-4 rounded text-accent" />
+          <span class="text-sm">Business plans & strategies</span>
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox" name="confidential[]" value="clients" class="w-4 h-4 rounded text-accent" />
+          <span class="text-sm">Client data & customer information</span>
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox" name="confidential[]" value="financial" class="w-4 h-4 rounded text-accent" />
+          <span class="text-sm">Financial information & records</span>
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox" name="confidential[]" value="technical" class="w-4 h-4 rounded text-accent" />
+          <span class="text-sm">Technical data / Source code</span>
+        </label>
+
+        <label class="checkbox-item bg-accent/5 border-accent/30">
+          <input type="checkbox" name="confidential[]" value="all" checked class="w-4 h-4 rounded text-accent" />
+          <span class="text-sm font-medium">All confidential information received during employment</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- STEP 5: Purpose of Disclosure -->
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="5">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">🎯</span>
+        <h2 class="text-xl font-semibold text-card-foreground">Purpose of Disclosure</h2>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-foreground">Purpose <span class="text-red-500">*</span></label>
+        <select name="purpose" required
+          class="w-full px-4 py-3 rounded-xl border border-input bg-card text-foreground">
+          <option value="">Select purpose...</option>
+          <option value="employment">Employment duties</option>
+          <option value="project">Project execution</option>
+          <option value="business">Business operations</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- STEP 6: Duration -->
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="6">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">⏱️</span>
+        <h2 class="text-xl font-semibold text-card-foreground">Duration</h2>
+      </div>
+
+      <div class="space-y-6">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-foreground">During Employment</label>
+          <input type="text" disabled value="Confidentiality obligations apply throughout employment"
+            class="w-full px-4 py-3 rounded-xl bg-muted border border-border text-muted-foreground cursor-not-allowed" />
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-foreground">Post-Employment Duration <span class="text-red-500">*</span></label>
+          <select name="post_duration" required
+            class="w-full px-4 py-3 rounded-xl border border-input bg-card text-foreground">
+            <option value="1">1 year after termination</option>
+            <option value="2" selected>2 years after termination</option>
+            <option value="3">3 years after termination</option>
+            <option value="5">5 years after termination</option>
+            <option value="indefinite">Indefinite (perpetual)</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 7: Return of Property -->
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="7">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">📦</span>
+        <h2 class="text-xl font-semibold text-card-foreground">Return of Property</h2>
+      </div>
+
+      <p class="text-sm text-muted-foreground mb-6">Upon termination, the employee shall:</p>
+
+      <div class="space-y-3">
+        <label class="radio-item">
+          <input type="radio" name="return_property" value="return" checked class="w-4 h-4 text-accent" />
+          <span class="text-sm">Return all materials and documents</span>
+        </label>
+
+        <label class="radio-item">
+          <input type="radio" name="return_property" value="return_certify" class="w-4 h-4 text-accent" />
+          <span class="text-sm">Return all materials + Certify destruction of copies</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- STEP 8: Jurisdiction -->
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="8">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">⚖️</span>
+        <h2 class="text-xl font-semibold text-card-foreground">Jurisdiction</h2>
+      </div>
+
+      <div class="space-y-6">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-foreground">Governing Law</label>
+          <input type="text" disabled value="Laws of India"
+            class="w-full px-4 py-3 rounded-xl bg-muted border border-border text-muted-foreground cursor-not-allowed" />
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-foreground">Court Jurisdiction <span class="text-red-500">*</span></label>
+          <select name="jurisdiction" required
+            class="w-full px-4 py-3 rounded-xl border border-input bg-card text-foreground">
+            <option value="">Select jurisdiction...</option>
+            <option value="Delhi">Delhi</option>
+            <option value="Mumbai">Mumbai, Maharashtra</option>
+            <option value="Bangalore">Bangalore, Karnataka</option>
+            <option value="Chennai">Chennai, Tamil Nadu</option>
+            <option value="Hyderabad">Hyderabad, Telangana</option>
+            <option value="Kolkata">Kolkata, West Bengal</option>
+            <option value="Pune">Pune, Maharashtra</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 9: Final Review -->
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="9">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">✅</span>
+        <h2 class="text-xl font-semibold text-card-foreground">Final Review</h2>
+      </div>
+
+      <div class="space-y-6">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <p class="text-sm text-amber-800">
+            <strong>Disclaimer:</strong> This NDA is generated using AI and is for reference purposes only.
+            Please consult a qualified legal professional before using this document for official purposes.
+          </p>
+        </div>
+
+        <label class="checkbox-item">
+          <input type="checkbox" id="disclaimer_check" required class="w-4 h-4 rounded text-accent" />
+          <span class="text-sm">I understand this is AI-generated and does not constitute legal advice</span>
+        </label>
+
+        <button type="submit" id="generateBtn"
+          class="w-full bg-accent text-accent-foreground py-4 rounded-xl font-semibold text-lg btn-primary transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+          Generate NDA Document
+
+        </button>
+      </div>
+    </section>
+
+    <!-- NAVIGATION -->
+    <div class="flex justify-between items-center pt-4">
+      <button type="button" id="prevBtn"
+        class="px-6 py-3 rounded-xl border border-border bg-card text-foreground font-medium btn-secondary transition-all duration-200 hidden">
+        ← Back
+      </button>
+      <div class="flex-1"></div>
+      <button type="button" id="nextBtn"
+        class="px-8 py-3 rounded-xl bg-accent text-accent-foreground font-medium btn-primary transition-all duration-200">
+        Next →
+      </button>
+    </div>
+
+  </form>
+</main>
+
+<!-- FOOTER -->
+<footer class="border-t border-border bg-card">
+  <div class="max-w-6xl mx-auto px-4 py-6 text-center">
+    <p class="text-sm text-muted-foreground">© 2025 LawChatAI.in · AI-powered legal document generation</p>
+  </div>
+</footer>
+
+<script>
+  const steps = document.querySelectorAll('.step');
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const progressPercent = document.getElementById('progressPercent');
+  const nextBtn = document.getElementById('nextBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const form = document.getElementById('ndaForm');
+
+  let currentStep = 0;
+  const totalSteps = steps.length;
+
+  const stepTitles = [
+    'Agreement Basics',
+    'Employer Details',
+    'Employee Details',
+    'Confidential Information',
+    'Purpose of Disclosure',
+    'Duration',
+    'Return of Property',
+    'Jurisdiction',
+    'Final Review'
+  ];
+
+  function updateUI() {
+    steps.forEach((step, index) => {
+      step.classList.toggle('hidden', index !== currentStep);
+    });
+
+    const percent = Math.round(((currentStep + 1) / totalSteps) * 100);
+    progressBar.style.width = percent + '%';
+    progressText.textContent = `Step ${currentStep + 1} of ${totalSteps}: ${stepTitles[currentStep]}`;
+    progressPercent.textContent = percent + '%';
+
+    prevBtn.classList.toggle('hidden', currentStep === 0);
+    nextBtn.classList.toggle('hidden', currentStep === totalSteps - 1);
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function validateCurrentStep() {
+    const currentStepElement = steps[currentStep];
+    const requiredInputs = currentStepElement.querySelectorAll(
+      'input[required], select[required], textarea[required]'
+    );
+
+    let isValid = true;
+    requiredInputs.forEach(input => {
+      if (!input.value.trim()) {
+        isValid = false;
+        input.classList.add('border-red-500');
+      } else {
+        input.classList.remove('border-red-500');
+      }
+    });
+
+    return isValid;
+  }
+
+  nextBtn.addEventListener('click', () => {
+    if (validateCurrentStep() && currentStep < totalSteps - 1) {
+      currentStep++;
+      updateUI();
+    }
+  });
+
+  prevBtn.addEventListener('click', () => {
+    if (currentStep > 0) {
+      currentStep--;
+      updateUI();
+    }
+  });
+
+  // ✅ FINAL SUBMIT HANDLER — NO FETCH
+  form.addEventListener('submit', (e) => {
+    const disclaimerCheck = document.getElementById('disclaimer_check');
+
+    if (!disclaimerCheck.checked) {
+      e.preventDefault();
+      alert('Please accept the disclaimer to proceed.');
+      return;
+    }
+
+    // ✅ allow normal browser submit
+    // Flask will handle /nda/generate
+  });
+
+  updateUI();
+</script>
+
+</body>
+</html>

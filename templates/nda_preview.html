@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NDA Preview | LawChatAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Watermark */
+    .watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+      font-size: 5rem;
+      color: rgba(0,0,0,0.05);
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+    }
+
+    .clause {
+      position: relative;
+      padding-left: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .clause.edited {
+      border-left: 4px solid #2563eb;
+      background-color: #fffbea;
+    }
+
+    .clause-actions {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    [contenteditable="true"]:focus {
+      outline: none;
+      background-color: #fffdf5;
+    }
+
+    @media print {
+      .no-print,
+      .watermark,
+      .clause-actions,
+      .edited-badge {
+        display: none;
+      }
+      body {
+        background: white;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 text-gray-900">
+
+<!-- HEADER -->
+<header class="no-print bg-slate-900 text-white sticky top-0 z-50 w-full">
+  <div class="max-w-7xl mx-auto px-4 min-h-[64px] flex justify-between items-center">
+
+    <!-- Left -->
+    <div>
+      <h1 class="text-lg md:text-xl font-semibold tracking-tight">
+        LawChatAI
+      </h1>
+      <span class="text-xs md:text-sm opacity-80 block">
+        NDA Preview
+      </span>
+    </div>
+
+    <!-- Right -->
+    <a
+      href="{{ url_for('nda.my_documents') }}"
+      class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl
+             text-sm font-medium hover:bg-blue-700 transition"
+    >
+      📁
+      <span class="hidden sm:inline">My Documents</span>
+    </a>
+
+  </div>
+</header>
+
+
+<div class="watermark">DRAFT · LawChatAI</div>
+
+<div class="max-w-5xl mx-auto mt-24 mb-10 px-4">
+
+  <div class="bg-white shadow-lg rounded-lg px-10 py-12">
+
+    <h1 class="text-2xl font-bold text-center mb-10">
+      Employee Confidentiality & Non-Disclosure Agreement
+    </h1>
+
+    <!-- CLAUSE 1 -->
+    <div class="clause mb-6" data-original="{{ nda_text }}">
+      <div class="clause-actions no-print">
+        <button onclick="toggleEdit(this)"
+          class="text-xs px-2 py-1 border rounded text-blue-600">
+          ✏️ Edit
+        </button>
+        <span class="edited-badge hidden text-xs text-blue-600 font-semibold">
+          Edited
+        </span>
+      </div>
+
+      <p class="font-semibold mb-2">1. Confidential Information</p>
+
+      <div class="clause-text text-sm leading-7 whitespace-pre-line"
+           contenteditable="false">
+        {{ nda_text }}
+      </div>
+    </div>
+
+    <!-- CLAUSE 2 -->
+    <div class="clause mb-6">
+      <div class="clause-actions no-print">
+        <button onclick="toggleEdit(this)"
+          class="text-xs px-2 py-1 border rounded text-blue-600">
+          ✏️ Edit
+        </button>
+        <span class="edited-badge hidden text-xs text-blue-600 font-semibold">
+          Edited
+        </span>
+      </div>
+
+      <p class="font-semibold mb-2">2. Term & Duration</p>
+
+      <div class="clause-text text-sm leading-7"
+           contenteditable="false">
+        The confidentiality obligations shall remain in force during the
+        term of employment and for the agreed post-employment duration.
+      </div>
+    </div>
+
+    <!-- SIGNATURE -->
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 text-sm">
+      <div>
+        <p class="font-semibold mb-8">For Employer</p>
+        <div class="border-t w-64"></div>
+      </div>
+      <div>
+        <p class="font-semibold mb-8">Employee</p>
+        <div class="border-t w-64"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ACTION BAR -->
+  <div class="no-print bg-white shadow rounded-lg mt-6 p-6 flex justify-between items-center">
+
+    <p class="text-sm text-gray-600">
+      🔒 Locked clauses are read-only · ✏️ Edit to customize
+    </p>
+
+    <form method="POST" action="/nda/generate-pdf" onsubmit="collectFinalText()"
+          class="flex items-center gap-4">
+
+      <input type="hidden" name="nda_text" id="finalNdaText">
+
+      <label class="flex items-center gap-2 text-sm">
+        <input type="checkbox" required class="accent-blue-600">
+        I approve this NDA
+      </label>
+
+    <button type="submit" id="generatePdfBtn"
+        class="px-6 py-3 bg-blue-600 text-white rounded-lg
+               flex items-center justify-center gap-3
+               disabled:opacity-60 disabled:cursor-not-allowed">
+
+        <span id="pdfBtnText">Generate PDF</span>
+
+        <!-- Spinner -->
+        <svg id="pdfLoader" class="hidden w-5 h-5 animate-spin" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10"
+            stroke="currentColor" stroke-width="4" fill="none" />
+          <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+        </svg>
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
+
+<script>
+  function toggleEdit(btn) {
+    const clause = btn.closest(".clause");
+    const text = clause.querySelector(".clause-text");
+    const badge = clause.querySelector(".edited-badge");
+
+    const isEditable = text.getAttribute("contenteditable") === "true";
+
+    if (isEditable) {
+      text.setAttribute("contenteditable", "false");
+      btn.textContent = "✏️ Edit";
+
+      if (text.dataset.original && text.innerText !== text.dataset.original) {
+        clause.classList.add("edited");
+        badge.classList.remove("hidden");
+      }
+    } else {
+      text.dataset.original = text.innerText;
+      text.setAttribute("contenteditable", "true");
+      btn.textContent = "🔒 Lock";
+      text.focus();
+    }
+  }
+
+  function collectFinalText() {
+    const clauses = document.querySelectorAll(".clause-text");
+    let finalText = "";
+
+    clauses.forEach((c, i) => {
+      finalText += `Clause ${i + 1}\n${c.innerText}\n\n`;
+    });
+
+    document.getElementById("finalNdaText").value = finalText.trim();
+  }
+
+  const pdfForm = document.querySelector('form[action="/nda/generate-pdf"]');
+  const pdfBtn = document.getElementById("generatePdfBtn");
+  const pdfBtnText = document.getElementById("pdfBtnText");
+  const pdfLoader = document.getElementById("pdfLoader");
+  const pdfOverlay = document.getElementById("pdfOverlay");
+
+  pdfForm.addEventListener("submit", () => {
+    // UI lock
+    pdfBtn.disabled = true;
+    pdfBtnText.textContent = "Generating PDF…";
+    pdfLoader.classList.remove("hidden");
+
+    // Show overlay
+    pdfOverlay.classList.remove("hidden");
+  });
+
+
+  setTimeout(() => {
+    if (pdfBtn && pdfBtn.disabled) {
+      pdfBtn.disabled = false;
+      pdfBtnText.textContent = "Generate PDF";
+      pdfLoader.classList.add("hidden");
+      pdfOverlay.classList.add("hidden");
+    }
+  }, 15000); // 15 seconds
+
+</script>
+
+</body>
+</html>
