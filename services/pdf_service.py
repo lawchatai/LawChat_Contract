@@ -24,14 +24,9 @@ r2_client = boto3.client(
     region_name="auto",
 )
 
-class PDFGenerationError(Exception):
-    """Custom exception for PDF generation failures"""
-    pass
-
 
 class PDFServiceError(Exception):
     pass
-
 
 def generate_pdf_remote(html: str) -> bytes:
     if not PDF_SERVICE_URL or not PDF_SERVICE_TOKEN:

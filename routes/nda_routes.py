@@ -4,10 +4,12 @@ from services.pdf_service import save_pdf_to_r2, PDFServiceError, generate_pdf_r
 from services.nda_formatter import format_nda_text
 from flask import Blueprint, render_template, request, send_file, g, abort, current_app, flash, redirect, url_for
 import io
-import os
 from datetime import datetime, timedelta
 from pymongo import MongoClient
+from flask import redirect, abort, request
 from bson import ObjectId
+import boto3
+import os
 
 nda_bp = Blueprint("nda", __name__)
 
@@ -117,7 +119,6 @@ def generate_pdf():
         user_name
     )
 
-    # filename, file_path = save_pdf_to_r2(user_id, pdf_bytes, user_name)
 
     # 5️⃣ Save metadata in Mongo
     document_history.insert_one({
@@ -178,7 +179,6 @@ def cleanup_expired_documents():
 
         document_history.delete_one({"_id": doc["_id"]})
 
-
 @nda_bp.route("/document/<document_id>")
 @audit_log("document view/download")
 def open_document(document_id):
@@ -196,23 +196,77 @@ def open_document(document_id):
     if not doc:
         abort(404)
 
-    file_path = doc.get("file_path")
-    if not file_path:
+    if doc.get("storage") != "r2":
         abort(404)
 
-    abs_path = os.path.abspath(file_path)
-    if not os.path.exists(abs_path):
+    object_key = doc.get("object_key")
+    if not object_key:
         abort(404)
 
-    # 🔑 action flag
     action = request.args.get("action", "view")
 
-    return send_file(
-        abs_path,
-        mimetype="application/pdf",
-        as_attachment=(action == "download"),
-        download_name=f"{doc.get('document_type', 'document')}.pdf"
+    # 🔐 Create signed URL (valid for 5 minutes)
+    r2_client = boto3.client(
+        "s3",
+        endpoint_url=f"https://{os.getenv('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com",
+        aws_access_key_id=os.getenv("R2_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.getenv("R2_SECRET_ACCESS_KEY"),
+        region_name="auto",
     )
+
+    try:
+        signed_url = r2_client.generate_presigned_url(
+            "get_object",
+            Params={
+                "Bucket": os.getenv("R2_BUCKET_NAME"),
+                "Key": object_key,
+                "ResponseContentDisposition": (
+                    "attachment" if action == "download" else "inline"
+                )
+            },
+            ExpiresIn=300  # 5 minutes
+        )
+    except Exception:
+        abort(500)
+
+    # 🚀 Redirect user to Cloudflare
+    return redirect(signed_url)
+
+
+# @nda_bp.route("/document/<document_id>")
+# @audit_log("document view/download")
+# def open_document(document_id):
+#     if not g.user:
+#         abort(401)
+#
+#     user_id = ObjectId(g.user["_id"])
+#
+#     doc = document_history.find_one({
+#         "_id": ObjectId(document_id),
+#         "user_id": user_id,
+#         "status": "active"
+#     })
+#
+#     if not doc:
+#         abort(404)
+#
+#     file_path = doc.get("file_path")
+#     if not file_path:
+#         abort(404)
+#
+#     abs_path = os.path.abspath(file_path)
+#     if not os.path.exists(abs_path):
+#         abort(404)
+#
+#     # 🔑 action flag
+#     action = request.args.get("action", "view")
+#
+#     return send_file(
+#         abs_path,
+#         mimetype="application/pdf",
+#         as_attachment=(action == "download"),
+#         download_name=f"{doc.get('document_type', 'document')}.pdf"
+#     )
 
 
 @nda_bp.route("/document/<doc_id>/delete", methods=["POST"])
