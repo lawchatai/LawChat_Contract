@@ -1,6 +1,6 @@
 from services.audit import audit_log
 from services.nda_service import generate_employment_nda
-from services.pdf_service import generate_pdf_with_playwright, save_pdf_to_r2, PDFServiceError, generate_pdf_remote
+from services.pdf_service import save_pdf_to_r2, PDFServiceError, generate_pdf_remote
 from services.nda_formatter import format_nda_text
 from flask import Blueprint, render_template, request, send_file, g, abort, current_app, flash, redirect, url_for
 import io
