@@ -180,19 +180,22 @@ def cleanup_expired_documents():
 
         document_history.delete_one({"_id": doc["_id"]})
 
-def generate_r2_signed_url(object_key: str, expires_in=300, download=False):
-    """
-    Generates a signed URL for Cloudflare R2
-    expires_in: seconds (default 5 minutes)
-    """
-
+def generate_r2_signed_url(
+    object_key: str,
+    expires_in: int = 300,
+    download: bool = False,
+    filename: str | None = None,
+):
     params = {
         "Bucket": R2_BUCKET_NAME,
         "Key": object_key,
     }
 
     if download:
-        params["ResponseContentDisposition"] = "attachment"
+        safe_name = filename or object_key.split("/")[-1]
+        params["ResponseContentDisposition"] = (
+            f'attachment; filename="{safe_name}"'
+        )
 
     return r2_client.generate_presigned_url(
         ClientMethod="get_object",
@@ -224,24 +227,22 @@ def open_document(document_id):
     action = request.args.get("action", "view")
     is_download = action == "download"
 
-    # ----------------------------------
-    # 🔐 R2 OBJECT → SIGNED URL
-    # ----------------------------------
+    # 🔐 SIGNED URL (preferred & secure)
     if not file_path.startswith("http"):
         signed_url = generate_r2_signed_url(
             object_key=file_path,
             expires_in=300,
-            download=is_download
+            download=is_download,
+            filename=doc.get("file_name")
         )
         return redirect(signed_url)
 
-    # ----------------------------------
-    # 🌐 OLD PUBLIC URL (VIEW ONLY)
-    # ----------------------------------
+    # 🌐 Legacy public URLs (view-only)
     if is_download:
         abort(400, description="Download not supported for legacy documents")
 
     return redirect(file_path)
+
 
 @nda_bp.route("/document/<doc_id>/delete", methods=["POST"])
 @audit_log("document_deleted")
