@@ -86,7 +86,6 @@ def generate_pdf():
     email = user["email"]
 
     # 🔐 STEP 1: Plan + Credit Validation (BEFORE PDF generation)
-    user_id = ObjectId(g.user["_id"])
     allowed, mode = reserve_contract_credit(user_id)
     if not allowed:
         abort(403, description="Contract credits exhausted. Upgrade your plan.")
@@ -101,15 +100,18 @@ def generate_pdf():
         content=formatted_clauses
     )
 
-    # 3️⃣ Generate PDF
+    # 3️⃣ Generate PDF (REMOTE SERVICE)
     try:
-        pdf_bytes = generate_pdf_with_playwright(html)
-    except PDFGenerationError:
+        pdf_bytes = generate_pdf_remote(html)
+    except PDFServiceError as e:
+        # 🔁 Rollback credit if PDF failed
         if mode == "limited":
             rollback_contract_credit(user_id)
-        abort(500, description="Unable to generate PDF.")
 
-    # 4️⃣ Save PDF to disk
+        current_app.logger.error(f"PDF service failed: {e}")
+        abort(503, description="Unable to generate PDF. Please try again.")
+
+    # 4️⃣ Save PDF to disk (or R2 later)
     filename, file_path = save_pdf_to_disk(user_id, pdf_bytes, user_name)
 
     # 5️⃣ Save metadata in Mongo
@@ -128,17 +130,14 @@ def generate_pdf():
         "status": "active"
     })
 
-    # 6️⃣ Deduct credit ONLY for premium users
-    if mode == "limited":
-        reserve_contract_credit(user_id)
-
-    # 7️⃣ Return PDF
+    # 6️⃣ Return PDF
     return send_file(
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
         download_name=filename
     )
+
 
 
 @nda_bp.route("/my-documents")
