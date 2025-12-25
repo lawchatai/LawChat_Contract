@@ -1,6 +1,6 @@
 from services.audit import audit_log
 from services.nda_service import generate_employment_nda
-from services.pdf_service import save_pdf_to_r2, PDFServiceError, generate_pdf_remote
+from services.pdf_service import save_pdf_to_r2, PDFServiceError, generate_pdf_remote, r2_client
 from services.nda_formatter import format_nda_text
 from flask import Blueprint, render_template, request, send_file, g, abort, current_app, flash, redirect, url_for
 import io
@@ -14,6 +14,7 @@ import os
 nda_bp = Blueprint("nda", __name__)
 
 uri = os.getenv("MONGO_URI")
+R2_BUCKET_NAME = os.getenv("R2_BUCKET_NAME")
 
 db_client = MongoClient(uri)
 db = db_client["user_database"]
@@ -179,6 +180,27 @@ def cleanup_expired_documents():
 
         document_history.delete_one({"_id": doc["_id"]})
 
+def generate_r2_signed_url(object_key: str, expires_in=300, download=False):
+    """
+    Generates a signed URL for Cloudflare R2
+    expires_in: seconds (default 5 minutes)
+    """
+
+    params = {
+        "Bucket": R2_BUCKET_NAME,
+        "Key": object_key,
+    }
+
+    if download:
+        params["ResponseContentDisposition"] = "attachment"
+
+    return r2_client.generate_presigned_url(
+        ClientMethod="get_object",
+        Params=params,
+        ExpiresIn=expires_in,
+    )
+
+
 @nda_bp.route("/document/<document_id>")
 @audit_log("document view/download")
 def open_document(document_id):
@@ -201,32 +223,28 @@ def open_document(document_id):
         abort(404)
 
     action = request.args.get("action", "view")
+    is_download = action == "download"
 
-    # =========================
-    # 🌐 CLOUD (R2 URL)
-    # =========================
+    # ==================================
+    # 🌐 OLD PUBLIC URL (Backward Compatible)
+    # ==================================
     if file_path.startswith("http"):
-        if action == "download":
-            # Force download using content-disposition
+        if is_download:
             return redirect(
                 f"{file_path}?response-content-disposition=attachment"
             )
         return redirect(file_path)
 
-    # =========================
-    # 🗂 LEGACY LOCAL FILE
-    # =========================
-    abs_path = os.path.abspath(file_path)
-    if not os.path.exists(abs_path):
-        abort(404)
-
-    return send_file(
-        abs_path,
-        mimetype="application/pdf",
-        as_attachment=(action == "download"),
-        download_name=doc.get("file_name", "document.pdf")
+    # ==================================
+    # 🔐 PRIVATE R2 OBJECT → SIGNED URL
+    # ==================================
+    signed_url = generate_r2_signed_url(
+        object_key=file_path,
+        expires_in=300,  # 5 minutes
+        download=is_download
     )
 
+    return redirect(signed_url)
 
 
 # @nda_bp.route("/document/<document_id>")
