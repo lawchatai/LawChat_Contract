@@ -44,7 +44,6 @@ app.config.update(
     SESSION_COOKIE_DOMAIN=".lawchatai.in" if IS_PROD else None,
 )
 
-
 Session(app)
 
 def base64url_decode(data):
