@@ -196,41 +196,37 @@ def open_document(document_id):
     if not doc:
         abort(404)
 
-    if doc.get("storage") != "r2":
-        abort(404)
-
-    object_key = doc.get("object_key")
-    if not object_key:
+    file_path = doc.get("file_path")
+    if not file_path:
         abort(404)
 
     action = request.args.get("action", "view")
 
-    # 🔐 Create signed URL (valid for 5 minutes)
-    r2_client = boto3.client(
-        "s3",
-        endpoint_url=f"https://{os.getenv('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com",
-        aws_access_key_id=os.getenv("R2_ACCESS_KEY_ID"),
-        aws_secret_access_key=os.getenv("R2_SECRET_ACCESS_KEY"),
-        region_name="auto",
+    # =========================
+    # 🌐 CLOUD (R2 URL)
+    # =========================
+    if file_path.startswith("http"):
+        if action == "download":
+            # Force download using content-disposition
+            return redirect(
+                f"{file_path}?response-content-disposition=attachment"
+            )
+        return redirect(file_path)
+
+    # =========================
+    # 🗂 LEGACY LOCAL FILE
+    # =========================
+    abs_path = os.path.abspath(file_path)
+    if not os.path.exists(abs_path):
+        abort(404)
+
+    return send_file(
+        abs_path,
+        mimetype="application/pdf",
+        as_attachment=(action == "download"),
+        download_name=doc.get("file_name", "document.pdf")
     )
 
-    try:
-        signed_url = r2_client.generate_presigned_url(
-            "get_object",
-            Params={
-                "Bucket": os.getenv("R2_BUCKET_NAME"),
-                "Key": object_key,
-                "ResponseContentDisposition": (
-                    "attachment" if action == "download" else "inline"
-                )
-            },
-            ExpiresIn=300  # 5 minutes
-        )
-    except Exception:
-        abort(500)
-
-    # 🚀 Redirect user to Cloudflare
-    return redirect(signed_url)
 
 
 # @nda_bp.route("/document/<document_id>")
