@@ -4,3 +4,4 @@ playwright
 pymongo
 dnspython
 python-dotenv
+requests
