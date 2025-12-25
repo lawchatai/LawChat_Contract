@@ -4,7 +4,7 @@ from flask.cli import load_dotenv
 from flask_session import Session
 from datetime import datetime, timedelta
 from routes.nda_routes import nda_bp
-from LawChat_Contract.routes.nda_routes import cleanup_expired_documents
+from routes.nda_routes import cleanup_expired_documents
 from pymongo import MongoClient
 from functools import wraps
 import os
