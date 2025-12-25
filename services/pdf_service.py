@@ -66,32 +66,18 @@ def generate_pdf_remote(html: str) -> bytes:
 
 
 
-BASE_PDF_PATH = "storage/nda_pdfs"
-
-def save_pdf_to_disk(user_id, pdf_bytes, user_name):
-    user_dir = os.path.join(BASE_PDF_PATH, str(user_id))
-    os.makedirs(user_dir, exist_ok=True)
-
-    filename = f"NDA_{user_name}_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.pdf"
-    file_path = os.path.join(user_dir, filename)
-
-    with open(file_path, "wb") as f:
-        f.write(pdf_bytes)
-
-    return filename, file_path
-
+def safe_filename(name: str) -> str:
+    return "".join(c for c in name if c.isalnum() or c in ("_", "-"))
 
 def save_pdf_to_r2(user_id, pdf_bytes, user_name):
-    """
-    Uploads PDF to Cloudflare R2.
-    Returns: (filename, object_key, public_url)
-    """
+    if not r2_client:
+        raise RuntimeError("R2 is not configured")
 
     if not pdf_bytes:
         raise ValueError("Empty PDF bytes")
 
-    filename = f"NDA_{user_name}_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.pdf"
-
+    safe_name = safe_filename(user_name)
+    filename = f"NDA_{safe_name}_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.pdf"
     object_key = f"nda/{user_id}/{filename}"
 
     r2_client.put_object(
@@ -101,12 +87,15 @@ def save_pdf_to_r2(user_id, pdf_bytes, user_name):
         ContentType="application/pdf",
         Metadata={
             "user_id": str(user_id),
-            "document_type": "EMP_NDA"
-        }
+            "document_type": "EMP_NDA",
+        },
     )
 
-    public_url = None
-    if R2_PUBLIC_BASE_URL:
-        public_url = f"{R2_PUBLIC_BASE_URL}/{object_key}"
+    public_url = (
+        f"{R2_PUBLIC_BASE_URL}/{object_key}"
+        if R2_PUBLIC_BASE_URL
+        else None
+    )
 
     return filename, object_key, public_url
+

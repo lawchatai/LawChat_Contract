@@ -111,8 +111,13 @@ def generate_pdf():
         current_app.logger.error(f"PDF service failed: {e}")
         abort(503, description="Unable to generate PDF. Please try again.")
 
-    # 4️⃣ Save PDF to disk (or R2 later)
-    filename, file_path = save_pdf_to_r2(user_id, pdf_bytes, user_name)
+    filename, object_key, public_url = save_pdf_to_r2(
+        user_id,
+        pdf_bytes,
+        user_name
+    )
+
+    # filename, file_path = save_pdf_to_r2(user_id, pdf_bytes, user_name)
 
     # 5️⃣ Save metadata in Mongo
     document_history.insert_one({
@@ -122,7 +127,7 @@ def generate_pdf():
 
         "document_type": "EMP_NDA",
         "file_name": filename,
-        "file_path": file_path,
+        "file_path": public_url,
 
         "created_at": datetime.now(),
         "expires_at": datetime.now() + timedelta(days=30),
