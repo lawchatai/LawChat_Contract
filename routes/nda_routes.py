@@ -144,7 +144,6 @@ def generate_pdf():
     )
 
 
-
 @nda_bp.route("/my-documents")
 def my_documents():
     if not g.user:
@@ -167,16 +166,29 @@ def cleanup_expired_documents():
     now = datetime.now()
 
     expired_docs = document_history.find({
-        "expires_at": {"$lte": now}
+        "expires_at": {"$lte": now},
+        "status": "active"
     })
 
     for doc in expired_docs:
-        path = os.path.join(current_app.root_path, doc["file_path"])
+        object_key = doc.get("file_path")
 
-        if os.path.exists(path):
-            os.remove(path)
+        # 🔥 Delete from R2
+        if object_key:
+            try:
+                r2_client.delete_object(
+                    Bucket=R2_BUCKET_NAME,
+                    Key=object_key
+                )
+            except Exception as e:
+                current_app.logger.error(
+                    f"Failed to delete expired R2 object {object_key}: {e}"
+                )
+                continue  # don't block cleanup
 
+        # 🗑️ Remove DB record
         document_history.delete_one({"_id": doc["_id"]})
+
 
 def generate_r2_signed_url(
     object_key: str,
@@ -244,7 +256,6 @@ def open_document(document_id):
 
     return redirect(file_path)
 
-
 @nda_bp.route("/document/<doc_id>/delete", methods=["POST"])
 @audit_log("document_deleted")
 def delete_document(doc_id):
@@ -253,18 +264,30 @@ def delete_document(doc_id):
 
     doc = document_history.find_one({
         "_id": ObjectId(doc_id),
-        "user_id": ObjectId(g.user["_id"])
+        "user_id": ObjectId(g.user["_id"]),
+        "status": "active"
     })
 
     if not doc:
         abort(404)
 
-    path = doc.get("file_path")
-    if path and os.path.exists(path):
-        os.remove(path)
+    object_key = doc.get("file_path")
 
+    # 🔥 Delete from R2
+    if object_key:
+        try:
+            r2_client.delete_object(
+                Bucket=R2_BUCKET_NAME,
+                Key=object_key
+            )
+        except Exception as e:
+            current_app.logger.error(f"R2 delete failed: {e}")
+            abort(500, description="Unable to delete document")
+
+    # 🗑️ Delete metadata
     document_history.delete_one({"_id": doc["_id"]})
 
     flash("Document deleted successfully", "success")
     return redirect(url_for("nda.my_documents"))
+
 
