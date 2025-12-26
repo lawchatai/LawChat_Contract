@@ -114,12 +114,11 @@ def generate_pdf():
         current_app.logger.error(f"PDF service failed: {e}")
         abort(503, description="Unable to generate PDF. Please try again.")
 
-    filename, object_key, public_url = save_pdf_to_r2(
+    filename, object_key = save_pdf_to_r2(
         user_id,
         pdf_bytes,
         user_name
     )
-
 
     # 5️⃣ Save metadata in Mongo
     document_history.insert_one({
