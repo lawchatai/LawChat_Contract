@@ -129,11 +129,10 @@ def generate_pdf():
 
         "document_type": "EMP_NDA",
         "file_name": filename,
-        "file_path": public_url,
+        "file_path": object_key,
 
         "created_at": datetime.now(),
         "expires_at": datetime.now() + timedelta(days=30),
-
         "status": "active"
     })
 
