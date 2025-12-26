@@ -229,32 +229,29 @@
     document.getElementById("finalNdaText").value = finalText.trim();
   }
 
-  const pdfForm = document.querySelector('form[action="/nda/generate-pdf"]');
-  const pdfBtn = document.getElementById("generatePdfBtn");
-  const pdfBtnText = document.getElementById("pdfBtnText");
-  const pdfLoader = document.getElementById("pdfLoader");
-  const pdfOverlay = document.getElementById("pdfOverlay");
+    const pdfForm = document.querySelector('form[action="/nda/generate-pdf"]');
+    const pdfBtn = document.getElementById("generatePdfBtn");
+    const pdfBtnText = document.getElementById("pdfBtnText");
+    const pdfLoader = document.getElementById("pdfLoader");
 
-  pdfForm.addEventListener("submit", () => {
-    // UI lock
-    pdfBtn.disabled = true;
-    pdfBtnText.textContent = "Generating PDF…";
-    pdfLoader.classList.remove("hidden");
+    let submitted = false;
 
-    // Show overlay
-    pdfOverlay.classList.remove("hidden");
-  });
+    pdfForm.addEventListener("submit", () => {
+      if (submitted) return false; // 🚫 double click protection
 
+      submitted = true;
+      pdfBtn.disabled = true;
+      pdfBtnText.textContent = "Generating PDF…";
+      pdfLoader.classList.remove("hidden");
 
-  setTimeout(() => {
-    if (pdfBtn && pdfBtn.disabled) {
-      pdfBtn.disabled = false;
-      pdfBtnText.textContent = "Generate PDF";
-      pdfLoader.classList.add("hidden");
-      pdfOverlay.classList.add("hidden");
-    }
-  }, 15000); // 15 seconds
-
+      // ✅ UX-safe reset for file downloads
+      setTimeout(() => {
+        submitted = false;
+        pdfBtn.disabled = false;
+        pdfBtnText.textContent = "Generate PDF";
+        pdfLoader.classList.add("hidden");
+      }, 10000); // 8–12 sec is industry standard
+    });
 </script>
 
 </body>
