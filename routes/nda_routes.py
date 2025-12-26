@@ -196,12 +196,15 @@ def generate_r2_signed_url(
         params["ResponseContentDisposition"] = (
             f'attachment; filename="{safe_name}"'
         )
+        # 👇 CRITICAL FIX
+        params["ResponseContentType"] = "application/octet-stream"
 
     return r2_client.generate_presigned_url(
         ClientMethod="get_object",
         Params=params,
         ExpiresIn=expires_in,
     )
+
 
 @nda_bp.route("/document/<document_id>")
 @audit_log("document view/download")
