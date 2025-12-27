@@ -54,11 +54,12 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      font-family: 'Inter', system-ui, sans-serif;
+    *
+    {
+      font-family: 'Poppins', sans-serif;
     }
 
     /* Custom focus styles */
@@ -83,10 +84,10 @@
     }
 
     /* Button hover effects */
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px hsla(217, 91%, 60%, 0.3);
-    }
+<!--    .btn-primary:hover {-->
+<!--      transform: translateY(-1px);-->
+<!--      box-shadow: 0 4px 12px hsla(217, 91%, 60%, 0.3);-->
+<!--    }-->
 
     .btn-secondary:hover {
       background-color: hsl(210, 40%, 96%);
@@ -142,32 +143,71 @@
   </style>
 </head>
 
-<body class="bg-background text-foreground min-h-screen flex flex-col">
+<body class="bg-gray-100 min-h-screen flex flex-col text-gray-800">
 
 <!-- HEADER -->
-<header class="bg-primary text-white sticky top-0 z-50 w-full">
-  <div class="max-w-7xl mx-auto px-4 min-h-[64px] flex justify-between items-center gap-4">
+  <header class="bg-gradient-to-r from-purple-800 to-purple-600 text-white sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
-    <!-- Left -->
     <div>
-      <h1 class="text-lg md:text-xl font-semibold tracking-tight">
-        LawChatAI
+      <h1 class="text-xl font-semibold tracking-wide">
+        <a href="https://lawchatai.in" class="hover:opacity-80 cursor-pointer">
+          LawChat AI
+        </a>
       </h1>
-      <span class="text-xs md:text-sm opacity-80 block">
-        Employee NDA Generator
-      </span>
+      <p class="text-sm opacity-90">Employee NDA Generator</p>
     </div>
 
-    <!-- Right -->
-    <a
-      href="{{ url_for('nda.my_documents') }}"
-      class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl
-             text-sm font-medium hover:bg-blue-700 transition"
-    >
-      📁
-      <span class="hidden sm:inline">My Documents</span>
-    </a>
+    <div class="flex items-center gap-3">
 
+      <!-- Profile -->
+      <a
+        href="https://lawchatai.in/profile"
+        class="bg-white text-purple-700 px-3 py-2 rounded-lg font-medium hover:bg-gray-100 transition flex items-center justify-center"
+        aria-label="Profile"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </a>
+
+      <!-- My Documents -->
+      <a
+        href="{{ url_for('nda.my_documents') }}"
+        class="bg-white text-purple-700 px-3 py-2 rounded-lg font-medium hover:bg-gray-100 transition flex items-center gap-2"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="15" cy="19" r="2"/>
+          <path d="M20.9 19.8A2 2 0 0 0 22 18V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h5.1"/>
+          <path d="M15 11v-1"/>
+          <path d="M15 17v-2"/>
+        </svg>
+
+      </a>
+
+
+    </div>
   </div>
 </header>
 
@@ -180,7 +220,7 @@
       <p id="progressText" class="text-sm font-medium text-foreground"></p>
       <p id="progressPercent" class="text-sm font-medium text-accent"></p>
     </div>
-    <div class="w-full bg-border rounded-full h-2 overflow-hidden">
+    <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
       <div id="progressBar" class="bg-accent h-2 rounded-full" style="width: 0%"></div>
     </div>
   </div>
@@ -192,7 +232,7 @@
 
 
     <!-- STEP 1: Agreement Basics -->
-    <section class="step card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="1">
+    <section class="step bg-white rounded-2xl shadow-lg p-6 sm:p-8" data-step="1">
       <div class="flex items-center gap-3 mb-6">
         <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">📄</span>
         <h2 class="text-xl font-semibold text-card-foreground">Agreement Basics</h2>
@@ -214,7 +254,7 @@
     </section>
 
     <!-- STEP 2: Employer Details -->
-    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="2">
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8" data-step="2">
       <div class="flex items-center gap-3 mb-6">
         <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">🏢</span>
         <h2 class="text-xl font-semibold text-card-foreground">Employer Details</h2>
@@ -253,7 +293,7 @@
     </section>
 
     <!-- STEP 3: Employee Details -->
-    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="3">
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8" data-step="3">
       <div class="flex items-center gap-3 mb-6">
         <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">👤</span>
         <h2 class="text-xl font-semibold text-card-foreground">Employee Details</h2>
@@ -276,7 +316,7 @@
     </section>
 
     <!-- STEP 4: Confidential Information -->
-    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="4">
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8" data-step="4">
       <div class="flex items-center gap-3 mb-6">
         <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">🔒</span>
         <h2 class="text-xl font-semibold text-card-foreground">Confidential Information</h2>
@@ -313,7 +353,7 @@
     </section>
 
     <!-- STEP 5: Purpose of Disclosure -->
-    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="5">
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8" data-step="5">
       <div class="flex items-center gap-3 mb-6">
         <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">🎯</span>
         <h2 class="text-xl font-semibold text-card-foreground">Purpose of Disclosure</h2>
@@ -333,7 +373,7 @@
     </section>
 
     <!-- STEP 6: Duration -->
-    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="6">
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8" data-step="6">
       <div class="flex items-center gap-3 mb-6">
         <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">⏱️</span>
         <h2 class="text-xl font-semibold text-card-foreground">Duration</h2>
@@ -361,7 +401,7 @@
     </section>
 
     <!-- STEP 7: Return of Property -->
-    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="7">
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8" data-step="7">
       <div class="flex items-center gap-3 mb-6">
         <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">📦</span>
         <h2 class="text-xl font-semibold text-card-foreground">Return of Property</h2>
@@ -383,7 +423,7 @@
     </section>
 
     <!-- STEP 8: Jurisdiction -->
-    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="8">
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8" data-step="8">
       <div class="flex items-center gap-3 mb-6">
         <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">⚖️</span>
         <h2 class="text-xl font-semibold text-card-foreground">Jurisdiction</h2>
@@ -414,7 +454,7 @@
     </section>
 
     <!-- STEP 9: Final Review -->
-    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8 lg:p-10" data-step="9">
+    <section class="step hidden card bg-card rounded-2xl p-6 sm:p-8" data-step="9">
       <div class="flex items-center gap-3 mb-6">
         <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-lg">✅</span>
         <h2 class="text-xl font-semibold text-card-foreground">Final Review</h2>
@@ -458,10 +498,8 @@
 </main>
 
 <!-- FOOTER -->
-<footer class="border-t border-border bg-card">
-  <div class="max-w-6xl mx-auto px-4 py-6 text-center">
-    <p class="text-sm text-muted-foreground">© 2025 LawChatAI.in · AI-powered legal document generation</p>
-  </div>
+<footer class="bg-purple-700 text-white text-center py-6 text-sm">
+  <p>© 2025 LawChat AI · Made with ❤️ in India</p>
 </footer>
 
 <script>

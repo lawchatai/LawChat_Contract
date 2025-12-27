@@ -10,6 +10,8 @@
 
   <!-- Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
   <script>
     tailwind.config = {
@@ -25,33 +27,61 @@
       }
     }
   </script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
 </head>
 
 <body class="bg-muted min-h-screen flex flex-col text-slate-800">
 
 <!-- HEADER -->
-<header class="bg-primary text-white sticky top-0 z-50 w-full">
-  <div class="max-w-7xl mx-auto px-4 min-h-[64px] flex justify-between items-center gap-4">
+<header class="bg-gradient-to-r from-purple-800 to-purple-600 text-white sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
-    <!-- Left -->
     <div>
-      <h1 class="text-lg md:text-xl font-semibold tracking-tight">
-        LawChatAI
+      <h1 class="text-xl font-semibold tracking-wide">
+        <a href="https://lawchatai.in" class="hover:opacity-80 cursor-pointer">
+          LawChat AI
+        </a>
       </h1>
-      <span class="text-xs md:text-sm opacity-80 block">
-        My Documents
-      </span>
+      <p class="text-sm opacity-90">My Documents</p>
     </div>
 
-    <!-- Right -->
-    <a
-      href="{{ url_for('nda.nda_form') }}"
-      class="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-xl
-             text-sm font-medium hover:bg-green-600 transition"
-    >
-      <i data-lucide="circle-plus"></i>
-      <span class="hidden sm:inline">Create Document</span>
-    </a>
+    <div class="flex items-center gap-3">
+      <!-- Profile -->
+      <a
+        href="https://lawchatai.in/profile"
+        class="bg-white text-purple-700 px-3 py-2 rounded-lg font-medium hover:bg-gray-100 transition flex items-center justify-center"
+        aria-label="Profile"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </a>
+
+      <!-- Create Document -->
+      <a
+        href="{{ url_for('nda.nda_form') }}"
+        class="bg-white text-purple-700 px-3 py-2 rounded-lg font-medium hover:bg-gray-100 transition flex items-center gap-2"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-plus-icon lucide-circle-plus"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+      </a>
+
+    </div>
 
   </div>
 </header>
@@ -196,8 +226,8 @@
 </main>
 
 <!-- FOOTER -->
-<footer class="text-center text-xs text-slate-500 py-6">
-  © 2025 LawChatAI.in · AI-powered legal drafts
+<footer class="bg-purple-700 text-white text-center py-6 text-sm">
+  <p>© 2025 LawChat AI · Made with ❤️ in India</p>
 </footer>
 
 <script>
