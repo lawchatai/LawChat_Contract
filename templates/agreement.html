@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Select Agreement | LawChatAI</title>
+  <title>Select Agreement | LawChat AI</title>
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -11,108 +11,145 @@
   <!-- Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: '#0F172A',
-            accent: '#2563EB',
-            muted: '#F8FAFC',
-            border: '#E5E7EB'
-          }
-        }
-      }
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
     }
-  </script>
+    .card-hover {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+  </style>
 </head>
 
-<body class="bg-muted min-h-screen flex flex-col text-slate-800">
+<body class="bg-gray-100 min-h-screen flex flex-col text-gray-800">
 
 <!-- HEADER -->
-<header class="bg-primary text-white sticky top-0 z-50 w-full">
-  <div class="max-w-7xl mx-auto px-4 min-h-[64px] flex justify-between items-center gap-4">
+<header class="bg-gradient-to-r from-purple-800 to-purple-600 text-white sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
-    <!-- Left -->
     <div>
-      <h1 class="text-lg md:text-xl font-semibold tracking-tight">
-        LawChatAI
+      <h1 class="text-xl font-semibold tracking-wide">
+        <a href="https://lawchatai.in" class="hover:opacity-80 cursor-pointer">
+          LawChat AI
+        </a>
       </h1>
-      <span class="text-xs md:text-sm opacity-80 block">
-        Agreement Generator
-      </span>
+      <p class="text-sm opacity-90">Agreement Generator</p>
     </div>
 
-    <!-- Right -->
-    <a
-      href="{{ url_for('nda.my_documents') }}"
-      class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl
-             text-sm font-medium hover:bg-blue-700 transition"
-    >
-      📁
-      <span class="hidden sm:inline">My Documents</span>
-    </a>
+    <div class="flex items-center gap-3">
 
+      <!-- Profile -->
+      <a
+        href="https://lawchatai.in/profile"
+        class="bg-white text-purple-700 px-3 py-2 rounded-lg font-medium hover:bg-gray-100 transition flex items-center justify-center"
+        aria-label="Profile"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </a>
+
+      <!-- My Documents -->
+      <a
+        href="{{ url_for('nda.my_documents') }}"
+        class="bg-white text-purple-700 px-3 py-2 rounded-lg font-medium hover:bg-gray-100 transition flex items-center gap-2"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="15" cy="19" r="2"/>
+          <path d="M20.9 19.8A2 2 0 0 0 22 18V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h5.1"/>
+          <path d="M15 11v-1"/>
+          <path d="M15 17v-2"/>
+        </svg>
+
+      </a>
+
+
+    </div>
   </div>
 </header>
 
-
 <!-- MAIN -->
-<main class="flex-1 flex items-center justify-center px-4 py-10">
+<main class="flex-1 flex items-center justify-center px-4 py-12">
 
   <div class="w-full max-w-5xl space-y-10">
 
     <!-- CATEGORY SECTION -->
     <section
       id="categorySection"
-      class="bg-white rounded-3xl shadow-sm border border-border p-6 sm:p-10"
+      class="bg-white rounded-2xl shadow-lg p-8 sm:p-12"
     >
-      <h2 class="text-xl sm:text-2xl font-semibold text-center mb-2">
+      <h2 class="text-2xl font-bold text-center mb-2">
         Choose Agreement Category
       </h2>
-      <p class="text-center text-sm text-slate-500 mb-8">
+      <p class="text-center text-gray-500 mb-10">
         Select the type of agreement you want to generate
       </p>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
 
         <!-- Contract Generator -->
         <button
           onclick="selectCategory('employment')"
-          class="group p-6 rounded-2xl border border-border hover:border-accent hover:shadow-md transition-all text-left"
+          class="card-hover bg-white border border-gray-200 rounded-2xl p-8 text-left"
         >
-          <div class="flex items-start gap-4">
-            <div class="bg-accent/10 text-accent p-3 rounded-xl">
+          <div class="flex items-start gap-5">
+            <div class="bg-purple-100 text-purple-600 p-4 rounded-xl">
               <i data-lucide="file-text"></i>
             </div>
-
             <div>
-              <h3 class="font-semibold text-lg">
+              <h3 class="text-xl font-semibold mb-1">
                 Contract Generator
               </h3>
-              <p class="text-sm text-slate-500 mt-1">
-                NDA, Employment Agreement, Rent Agreement, Service Agreement
+              <p class="text-sm text-gray-500">
+                NDA, Employment, Rent & Service Agreements
               </p>
             </div>
           </div>
         </button>
 
-        <!-- Commercial -->
+        <!-- Commercial Agreements -->
         <button
           onclick="selectCategory('commercial')"
-          class="group p-6 rounded-2xl border border-border hover:border-accent hover:shadow-md transition-all text-left"
+          class="card-hover bg-white border border-gray-200 rounded-2xl p-8 text-left"
         >
-          <div class="flex items-start gap-4">
-            <div class="bg-accent/10 text-accent p-3 rounded-xl">
+          <div class="flex items-start gap-5">
+            <div class="bg-purple-100 text-purple-600 p-4 rounded-xl">
               <i data-lucide="briefcase"></i>
             </div>
-
             <div>
-              <h3 class="font-semibold text-lg">
+              <h3 class="text-xl font-semibold mb-1">
                 Commercial Agreements
               </h3>
-              <p class="text-sm text-slate-500 mt-1">
-                Service, Vendor, Consulting Agreements
+              <p class="text-sm text-gray-500">
+                Vendor, Consulting & Service Contracts
               </p>
             </div>
           </div>
@@ -124,24 +161,24 @@
     <!-- SUB CATEGORY SECTION -->
     <section
       id="subCategorySection"
-      class="hidden bg-white rounded-3xl shadow-sm border border-border p-6 sm:p-10"
+      class="hidden bg-white rounded-2xl shadow-lg p-8 sm:p-12"
     >
-      <h2 class="text-xl sm:text-2xl font-semibold text-center mb-2">
+      <h2 class="text-2xl font-bold text-center mb-2">
         Choose Agreement Type
       </h2>
-      <p class="text-center text-sm text-slate-500 mb-8">
+      <p class="text-center text-gray-500 mb-10">
         Select a specific agreement to continue
       </p>
 
       <div
         id="subCategoryGrid"
-        class="grid grid-cols-1 sm:grid-cols-2 gap-6"
+        class="grid grid-cols-1 sm:grid-cols-2 gap-8"
       ></div>
 
-      <div class="text-center mt-8">
+      <div class="text-center mt-10">
         <button
           onclick="goBack()"
-          class="inline-flex items-center gap-1 text-sm text-accent hover:underline"
+          class="text-purple-600 font-medium hover:underline"
         >
           ← Change Category
         </button>
@@ -152,8 +189,8 @@
 </main>
 
 <!-- FOOTER -->
-<footer class="text-center text-xs text-slate-500 py-6">
-  © 2025 LawChatAI.in · AI-powered legal drafts
+<footer class="bg-purple-700 text-white text-center py-6 text-sm">
+  <p>© 2025 LawChat AI · Made with ❤️ in India</p>
 </footer>
 
 <!-- SCRIPT -->
@@ -165,46 +202,111 @@
   const subCategoryGrid = document.getElementById('subCategoryGrid');
 
   const data = {
-    employment: [
-      { label: 'Employment NDA', url: '/nda?type=emp-nda', icon: 'lock' },
-      { label: 'Employment Agreement', url: '/employment-agreement', icon: 'user-check' }
-    ],
-    commercial: [
-      { label: 'Service Agreement', url: '/service-agreement', icon: 'settings' },
-      { label: 'Vendor Agreement', url: '/vendor-agreement', icon: 'truck' }
-    ]
-  };
+      employment: [
+        {
+          label: 'Employment NDA',
+          url: '/nda?type=emp-nda',
+          icon: 'lock',
+          premium: true,
+          credits: 15,
+          comingSoon: false
+        },
+        {
+          label: 'Employment Agreement',
+          url: '/employment-agreement',
+          icon: 'user-check',
+          premium: false,
+          credits: 10,
+          comingSoon: true
+        }
+      ],
+      commercial: [
+        {
+          label: 'Service Agreement',
+          url: '/service-agreement',
+          icon: 'settings',
+          premium: false,
+          credits: 10,
+          comingSoon: true
+        },
+        {
+          label: 'Vendor Agreement',
+          url: '/vendor-agreement',
+          icon: 'truck',
+          premium: false,
+          credits: 10,
+          comingSoon: true
+        }
+      ]
+    };
 
-  function selectCategory(category) {
-    subCategoryGrid.innerHTML = '';
+    function selectCategory(category) {
+      subCategoryGrid.innerHTML = '';
 
-    data[category].forEach(item => {
-      const btn = document.createElement('button');
-      btn.className =
-        'p-6 rounded-2xl border border-border hover:border-accent hover:shadow-md transition-all text-left';
+      data[category].forEach(item => {
+        const btn = document.createElement('button');
 
-      btn.innerHTML = `
-        <div class="flex items-start gap-4">
-          <div class="bg-accent/10 text-accent p-3 rounded-xl">
-            <i data-lucide="${item.icon}"></i>
+        const isDisabled = item.comingSoon;
+
+        btn.className = `
+          relative card-hover bg-white border border-gray-200 rounded-2xl p-8 text-left
+          ${isDisabled ? 'opacity-60 cursor-not-allowed hover:shadow-none hover:transform-none' : ''}
+        `;
+
+        btn.innerHTML = `
+          <!-- Top Right Badges -->
+          <div class="absolute -top-3 -right-3 flex flex-col gap-2 items-end z-10 whitespace-nowrap">
+            ${
+              item.comingSoon
+                ? `<div class="bg-gray-200 text-gray-700 rounded-full px-3 py-1 text-xs font-semibold shadow-sm">
+                     Coming Soon
+                   </div>`
+                : item.premium
+                ? `<div class="bg-yellow-100 text-yellow-700 rounded-full px-3 py-1 text-xs font-semibold flex items-center gap-1 shadow-sm">
+                     <i data-lucide="crown" class="w-3 h-3"></i> Premium
+                   </div>`
+                : ''
+            }
+
           </div>
-          <div>
-            <h3 class="font-semibold text-lg">${item.label}</h3>
-            <p class="text-sm text-slate-500 mt-1">
-              Generate ${item.label}
-            </p>
+
+          <!-- Bottom Credit Row -->
+          <div class="mt-0 pt-0 flex justify-end">
+            <span class="bg-purple-50 text-purple-700 rounded-full px-3 py-1 text-[11px] font-semibold whitespace-nowrap">
+              ${item.credits} Credits
+            </span>
           </div>
-        </div>
-      `;
 
-      btn.onclick = () => window.location.href = item.url;
-      subCategoryGrid.appendChild(btn);
-    });
+          <div class="flex items-start gap-4">
+            <div class="bg-purple-100 text-purple-600 p-4 rounded-xl">
+              <i data-lucide="${item.icon}"></i>
+            </div>
 
-    lucide.createIcons();
-    categorySection.classList.add('hidden');
-    subCategorySection.classList.remove('hidden');
-  }
+            <div>
+              <h3 class="text-xl font-semibold">${item.label}</h3>
+              <p class="text-sm text-gray-500 mt-1">
+                ${
+                  item.comingSoon
+                    ? 'This feature will be available soon'
+                    : `Generate ${item.label}`
+                }
+              </p>
+            </div>
+          </div>
+        `;
+
+        if (!isDisabled) {
+          btn.onclick = () => window.location.href = item.url;
+        }
+
+        subCategoryGrid.appendChild(btn);
+      });
+
+      lucide.createIcons();
+      categorySection.classList.add('hidden');
+      subCategorySection.classList.remove('hidden');
+    }
+
 
   function goBack() {
     subCategorySection.classList.add('hidden');
