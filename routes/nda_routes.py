@@ -60,7 +60,7 @@ def reserve_contract_credit(user_id):
         {
             "_id": user_id,
             "account_type": "Premium",
-            "credit_contract": {"$gt": 15}
+            "credit_contract": {"$gte": 15}
         },
         {
             "$inc": {"credit_contract": -15}
@@ -100,12 +100,13 @@ def generate_pdf():
     nda_text = request.form.get("nda_text")
 
     # 2️⃣ Format NDA
-    formatted_clauses = format_nda_text(nda_text)
+    formatted_clauses = format_nda_text(nda_text, include_watermark=False)
 
     html = render_template(
         "nda_pdf.html",
         content=formatted_clauses
     )
+
 
     # 3️⃣ Generate PDF (REMOTE SERVICE)
     try:
