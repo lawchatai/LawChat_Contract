@@ -222,10 +222,10 @@
       </label>
 
     <button type="submit" id="generatePdfBtn"
+        title="You need more credits or upgrade your plan"
         class="px-6 py-3 bg-blue-600 text-white rounded-lg
                flex items-center justify-center gap-3
                disabled:opacity-60 disabled:cursor-not-allowed">
-
         <span id="pdfBtnText">Generate PDF</span>
 
         <!-- Spinner -->
@@ -297,6 +297,35 @@
       pdfLoader.classList.add("hidden");
     }, 15000); // realistic PDF time
   }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const accountType = "{{ account_type }}";           // free, premium, premium_contract
+    const creditContract = {{ credit_contract }};      // number from Jinja
+
+    const pdfBtn = document.getElementById("generatePdfBtn");
+    const pdfBtnText = document.getElementById("pdfBtnText");
+
+    // Default: button enabled
+    let disableBtn = false;
+    let btnMessage = "Generate PDF";
+
+    if (accountType === "Free") {
+      disableBtn = true;
+      btnMessage = "Upgrade to Access";
+    }
+    else if (accountType === "Premium" && credit_contract < 15) {
+      disableBtn = true;
+      btnMessage = "15 Credits Required to Generate PDF";
+    }
+    // premium_contract→ full access, do nothing
+
+    pdfBtn.disabled = disableBtn;
+    pdfBtnText.textContent = btnMessage;
+
+    if (disableBtn) {
+      pdfBtn.classList.add("disabled:opacity-60", "disabled:cursor-not-allowed");
+    }
+  });
 
 </script>
 

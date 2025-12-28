@@ -24,7 +24,6 @@ db_client = MongoClient(uri)
 db = db_client["user_database"]  # Your database name
 users_collection = db["users"]   # Collection for storing user data
 
-
 app.secret_key = os.getenv("SECRET_KEY")
 
 IS_PROD = os.getenv("FLASK_ENV") == "production"
@@ -105,13 +104,9 @@ def sso_login():
         abort(404)
 
     session.clear()
-    session["user"] = {
-        "_id": str(user["_id"]),
-        "name": user["name"],
-        "email": user["email"]
-    }
-
+    session["user_id"] = str(user["_id"])
     session.permanent = True
+
     session.modified = True
 
     return redirect("/")
@@ -119,11 +114,9 @@ def sso_login():
 
 @app.before_request
 def load_logged_in_user():
-    user = session.get("user")
-
-    if user:
-        g.user = user
-        print(g.user)
+    user_id = session.get("user_id")
+    if user_id:
+        g.user = users_collection.find_one({"_id": ObjectId(user_id)})
     else:
         g.user = None
 
@@ -132,7 +125,7 @@ def login_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         if not g.user:
-            return redirect("https://lawchatai.in/login?next=nda")
+            return redirect(f"https://lawchatai.in/login?next={request.path}")
         return f(*args, **kwargs)
     return wrapper
 
@@ -146,9 +139,16 @@ def select_agreement():
 @login_required
 def nda():
     agreement_type = request.args.get("type", "emp-nda")
+
+    # Fetch dynamic fields from g.user
+    account_type = g.user.get("account_type", "basic")
+    credit_contract = g.user.get("credit_contract", 0)
+
     return render_template(
         "emp_nda.html",
-        agreement_type=agreement_type
+        agreement_type=agreement_type,
+        account_type=account_type,
+        credit_contract=credit_contract
     )
 
 @app.route("/lawchat/contract/cleanup-docs")

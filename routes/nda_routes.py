@@ -28,13 +28,17 @@ def nda_form():
 @nda_bp.route("/generate", methods=["POST"])
 def generate_nda():
     form_data = request.form.to_dict(flat=False)
+    account_type = g.user.get("account_type", "basic")
+    credit_contract = g.user.get("credit_contract", 0)
 
     nda_text = generate_employment_nda(form_data)
 
     return render_template(
         "nda_preview.html",
         nda_text=nda_text,
-        form_data=form_data
+        form_data=form_data,
+        account_type=account_type,
+        credit_contract=credit_contract
     )
 
 def reserve_contract_credit(user_id):
