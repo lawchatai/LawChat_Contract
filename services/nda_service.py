@@ -112,16 +112,10 @@ Employee is provided notice that they shall not be held criminally or civilly li
 
 8. Signatures
 
-Employee
+Employee                                                                     Company
 
-Signatures _____________________
-Print Name _____________________
-Date _____________________
-
-Company
-
-Signatures _____________________
-Print Name _____________________
-Date _____________________
+Signature _____________________                                              Signature _____________________
+Name __________________________                                              Name __________________________
+Date __________________________                                              Date __________________________
 """
     return nda.strip()
