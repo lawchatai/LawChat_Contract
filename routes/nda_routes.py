@@ -21,6 +21,107 @@ db = db_client["user_database"]
 document_history = db["document_history"]
 users_collection = db["users"]
 
+JURISDICTION_MAP = {
+
+    # Tier-1 / Default
+    "india_delhi": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at New Delhi"
+    },
+    "india_mumbai": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Mumbai"
+    },
+    "india_bangalore": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Bengaluru"
+    },
+    "india_chennai": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Chennai"
+    },
+    "india_hyderabad": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Hyderabad"
+    },
+    "india_kolkata": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Kolkata"
+    },
+    "india_pune": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Pune"
+    },
+
+    # Gujarat
+    "india_ahmedabad": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Ahmedabad"
+    },
+
+    # Rajasthan
+    "india_jaipur": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Jaipur"
+    },
+
+    # Punjab & Haryana
+    "india_chandigarh": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Chandigarh"
+    },
+    "india_gurgaon": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Gurugram"
+    },
+    "india_faridabad": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Faridabad"
+    },
+
+    # Kerala
+    "india_kochi": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Kochi"
+    },
+    "india_trivandrum": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Thiruvananthapuram"
+    },
+
+    # Tamil Nadu (non-metro)
+    "india_coimbatore": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Coimbatore"
+    },
+
+    # Madhya Pradesh
+    "india_indore": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Indore"
+    },
+    "india_bhopal": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Bhopal"
+    },
+
+    # Uttar Pradesh
+    "india_lucknow": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Lucknow"
+    },
+    "india_kanpur": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Kanpur"
+    },
+    "india_noida": {
+        "governing_law": "laws of India",
+        "jurisdiction": "courts at Noida"
+    }
+}
+
+
+
 @nda_bp.route("/")
 def nda_form():
     return render_template("agreement.html")
@@ -28,8 +129,17 @@ def nda_form():
 @nda_bp.route("/generate", methods=["POST"])
 def generate_nda():
     form_data = request.form.to_dict(flat=False)
-    account_type = g.user.get("account_type", "basic")
-    credit_contract = g.user.get("credit_contract", 0)
+
+    jurisdiction_key = form_data.get("jurisdiction_key", [""])[0]
+
+    if jurisdiction_key not in JURISDICTION_MAP:
+        abort(400, "Invalid jurisdiction selected")
+
+    jurisdiction_data = JURISDICTION_MAP[jurisdiction_key]
+
+    # Inject safe values into form_data
+    form_data["governing_law"] = [jurisdiction_data["governing_law"]]
+    form_data["jurisdiction"] = [jurisdiction_data["jurisdiction"]]
 
     nda_text = generate_employment_nda(form_data)
 
@@ -37,9 +147,26 @@ def generate_nda():
         "nda_preview.html",
         nda_text=nda_text,
         form_data=form_data,
-        account_type=account_type,
-        credit_contract=credit_contract
+        account_type=g.user.get("account_type", "basic"),
+        credit_contract=g.user.get("credit_contract", 0)
     )
+
+
+# @nda_bp.route("/generate", methods=["POST"])
+# def generate_nda():
+#     form_data = request.form.to_dict(flat=False)
+#     account_type = g.user.get("account_type", "basic")
+#     credit_contract = g.user.get("credit_contract", 0)
+#
+#     nda_text = generate_employment_nda(form_data)
+#
+#     return render_template(
+#         "nda_preview.html",
+#         nda_text=nda_text,
+#         form_data=form_data,
+#         account_type=account_type,
+#         credit_contract=credit_contract
+#     )
 
 def reserve_contract_credit(user_id):
     # user_id is already an ObjectId
@@ -106,7 +233,6 @@ def generate_pdf():
         "nda_pdf.html",
         content=formatted_clauses
     )
-
 
     # 3️⃣ Generate PDF (REMOTE SERVICE)
     try:

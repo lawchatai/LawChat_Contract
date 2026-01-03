@@ -437,19 +437,37 @@
         </div>
 
         <div class="space-y-2">
-          <label class="block text-sm font-medium text-foreground">Court Jurisdiction <span class="text-red-500">*</span></label>
-          <select name="jurisdiction" required
+          <label class="block text-sm font-medium text-foreground">
+            Court Jurisdiction <span class="text-red-500">*</span>
+          </label>
+
+          <select name="jurisdiction_key" required
             class="w-full px-4 py-3 rounded-xl border border-input bg-card text-foreground">
             <option value="">Select jurisdiction...</option>
-            <option value="Delhi">Delhi</option>
-            <option value="Mumbai">Mumbai, Maharashtra</option>
-            <option value="Bangalore">Bangalore, Karnataka</option>
-            <option value="Chennai">Chennai, Tamil Nadu</option>
-            <option value="Hyderabad">Hyderabad, Telangana</option>
-            <option value="Kolkata">Kolkata, West Bengal</option>
-            <option value="Pune">Pune, Maharashtra</option>
+
+            <option value="india_delhi">New Delhi (India)</option>
+            <option value="india_mumbai">Mumbai, Maharashtra</option>
+            <option value="india_bangalore">Bengaluru, Karnataka</option>
+            <option value="india_chennai">Chennai, Tamil Nadu</option>
+            <option value="india_hyderabad">Hyderabad, Telangana</option>
+            <option value="india_kolkata">Kolkata, West Bengal</option>
+            <option value="india_pune">Pune, Maharashtra</option>
+            <option value="india_ahmedabad">Ahmedabad (Gujarat)</option>
+            <option value="india_jaipur">Jaipur (Rajasthan)</option>
+            <option value="india_chandigarh">Chandigarh (Punjab & Haryana)</option>
+            <option value="india_kochi">Kochi (Kerala)</option>
+            <option value="india_trivandrum">Thiruvananthapuram (Kerala)</option>
+            <option value="india_coimbatore">Coimbatore (Tamil Nadu)</option>
+            <option value="india_indore">Indore (Madhya Pradesh)</option>
+            <option value="india_bhopal">Bhopal (Madhya Pradesh)</option>
+            <option value="india_lucknow">Lucknow (Uttar Pradesh)</option>
+            <option value="india_kanpur">Kanpur (Uttar Pradesh)</option>
+            <option value="india_noida">Noida (Uttar Pradesh)</option>
+            <option value="india_gurgaon">Gurugram (Haryana)</option>
+            <option value="india_faridabad">Faridabad (Haryana)</option>
           </select>
         </div>
+
       </div>
     </section>
 

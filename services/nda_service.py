@@ -3,71 +3,91 @@ def generate_employment_nda(data):
     employee_name = data.get("employee_name", [""])[0]
     designation = data.get("designation", [""])[0]
     effective_date = data.get("effective_date", [""])[0]
-    jurisdiction = data.get("jurisdiction", [""])[0]
-    state_law = data.get("state_law", [""])[0]
+    governing_law = data.get("governing_law", ["laws of India"])[0]
+    jurisdiction = data.get("jurisdiction", ["courts at New Delhi"])[0]
     confidential_items = data.get("confidential[]", [])
     confidential_text = ", ".join(confidential_items)
 
     nda = f"""
-This agreement (the “Agreement”) is entered into on {effective_date} by {employer_name} (“Company”) 
+EMPLOYMENT NON-DISCLOSURE AGREEMENT
+
+This Employment Non-Disclosure Agreement (“Agreement”) is entered into on {effective_date}
+between {employer_name}, a company incorporated under applicable laws (“Company”),
 and {employee_name}, employed as {designation} (“Employee”).
 
-In consideration of the commencement of Employee’s employment with Company and the compensation that will be paid, Employee and Company agree as follows:
+1. Purpose
 
-1. Company’s Trade Secrets
+In the course of Employee’s employment and in consideration of Employee’s employment,
+continued employment, and access to Confidential Information, Employee agrees to comply
+with the obligations set out in this Agreement.
 
-In the performance of Employee’s job duties with Company, Employee will be exposed to Company’s Confidential Information. “Confidential Information” means information or material that is commercially valuable to Company and not generally known or readily ascertainable in the industry. This includes, but is not limited to: {confidential_text}.
+2. Definition of Confidential Information
 
-2. Nondisclosure of Trade Secrets
+“Confidential Information” means all information, whether written, electronic, oral,
+visual, or in any other form, disclosed to Employee by Company or accessed by Employee
+during employment, that is not generally available to the public and is reasonably
+understood to be confidential, including but not limited to: {confidential_text}.
 
-The Employee shall keep Company’s Confidential Information, whether or not prepared or developed by Employee, in the strictest confidence. The Employee will not disclose such information to anyone outside Company without Company’s prior written consent, nor will Employee make use of any Confidential Information for Employee’s own purposes or the benefit of anyone other than Company.
+Confidential Information does not include information that:
+(a) is publicly available through no fault of Employee;
+(b) was lawfully known to Employee prior to disclosure by Company;
+(c) is lawfully received from a third party without breach of any obligation; or
+(d) is required to be disclosed pursuant to law, regulation, or court order,
+provided Employee gives prompt notice to Company where legally permissible.
 
-However, Employee shall have no obligation to treat as confidential any information which:
-(a) was in Employee’s possession or known to Employee, without an obligation to keep it confidential, before such information was disclosed to Employee by Company;
-(b) is or becomes public knowledge through a source other than Employee and through no fault of Employee; or
-(c) is or becomes lawfully available to Employee from a source other than Company.
+3. Non-Disclosure and Limited Use
 
-3. Confidential Information of Others
+Employee shall not, during or after employment, disclose Confidential Information
+to any third party or use such information for any purpose other than performance
+of duties for Company without prior written consent of Company.
 
-The Employee will not disclose to Company, use in Company’s business, or cause Company to use, any trade secret of others.
+4. Confidential Information of Third Parties
 
-4. Return of Materials
+Employee agrees not to improperly use or disclose confidential or proprietary
+information belonging to any third party.
 
-When Employee’s employment with Company ends, for whatever reason, Employee will promptly deliver to Company all originals and copies of all documents, records, software programs, media and other materials containing any Confidential Information. The Employee will also return all equipment, files, software programs and other personal property belonging to Company.
+5. Return of Company Property
 
-5. Confidentiality Obligation Survives Employment
+Upon termination of employment for any reason, Employee shall promptly return
+all documents, data, records, devices, and materials containing Confidential Information,
+whether in physical or electronic form.
 
-Employee’s obligation to maintain the confidentiality and security of Confidential Information remains even after Employee’s employment with Company ends and continues for so long as such Confidential Information remains a trade secret.
+6. Survival of Obligations
 
-6. General Provisions
+The obligations under this Agreement shall survive termination of employment
+for so long as the Confidential Information remains confidential under applicable law.
 
-(a) Relationships: Nothing contained in this Agreement shall be deemed to make Employee a partner or joint venturer of Company for any purpose.
-(b) Severability: If a court finds any provision invalid or unenforceable, the remainder shall be interpreted to best effect the intent of the parties.
-(c) Integration: This Agreement expresses the complete understanding and supersedes all prior agreements.
-(d) Waiver: Failure to exercise any right shall not be a waiver of prior or subsequent rights.
-(e) Injunctive Relief: Employee agrees that Company may apply to a court for an order enjoining misappropriation of Confidential Information.
-(f) Indemnity: Employee agrees to indemnify Company against losses due to breach of this Agreement.
-(g) Attorney Fees: The prevailing party may collect reasonable attorney fees and costs.
-(h) Governing Law: This Agreement shall be governed by the laws of the State of {state_law}.
-(i) Jurisdiction: The Employee consents to the exclusive jurisdiction of the federal and state courts located in {jurisdiction}.
-(j) Successors & Assigns: This Agreement shall bind each party’s heirs, successors, and assigns.
+7. General Provisions
 
-7. Notice of Immunity
+(a) No Partnership: Nothing herein creates an employer–employee relationship beyond
+existing employment terms, partnership, or agency.
 
-Employee is provided notice that they shall not be held criminally or civilly liable under any federal or state trade secret law for disclosure of a trade secret as part of certain legal or governmental proceedings.
+(b) Severability: If any provision is held unenforceable, the remaining provisions
+shall continue in full force.
+
+(c) Entire Agreement: This Agreement constitutes the entire understanding regarding
+confidentiality and supersedes prior agreements on the subject.
+
+(d) Waiver: Failure to enforce any provision shall not constitute a waiver.
+
+(e) Injunctive Relief: Company shall be entitled to seek injunctive or equitable relief
+for breach of this Agreement.
+
+(f) Governing Law: This Agreement shall be governed by the {governing_law}.
+(g) Jurisdiction: Courts at {jurisdiction} shall have exclusive jurisdiction.
+
 
 8. Signatures
 
-Employee                                                  
+Employee:
+Signature: ______________________
+Name: {employee_name}
+Date: ______________________
 
-Signatures _____________________
-Print Name _____________________
-Date _____________________
+Company:
+Signature: ______________________
+Name:
+Date: ______________________
 
-Company
-
-Signatures _____________________
-Print Name _____________________
-Date _____________________
 """
     return nda.strip()
