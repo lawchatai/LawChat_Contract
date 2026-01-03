@@ -91,7 +91,7 @@ for any breach or threatened breach of this Agreement.
 Employee:
 Signature: ______________________
 Name: {employee_name}
-Designation: ____________________
+Designation: {designation}
 Date: ______________________
 
 Company:
