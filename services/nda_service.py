@@ -91,12 +91,12 @@ for any breach or threatened breach of this Agreement.
 Employee:
 Signature: ______________________
 Name: {employee_name}
+Designation: ____________________
 Date: ______________________
 
 Company:
 Signature: ______________________
 Name: {employer_name}
-Designation: ____________________
 Date: ______________________
 """
 
