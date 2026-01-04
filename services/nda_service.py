@@ -23,7 +23,6 @@ def generate_employment_nda(data):
         return data.get(key, [default])[0].strip()
 
     employer_name = get_value("employer_name")
-    employer_address = get_value("employer_address", "[Registered Address]")
     employee_name = get_value("employee_name")
     designation = get_value("designation")
 
@@ -45,12 +44,10 @@ def generate_employment_nda(data):
         )
 
     nda = f"""
-EMPLOYMENT NON-DISCLOSURE AGREEMENT
 
 This Employment Non-Disclosure Agreement (“Agreement”) is entered into on
-{effective_date} (“Effective Date”) between {employer_name}, a company incorporated
-under the laws of India, having its registered office at {employer_address}
-(“Company”), and {employee_name}, employed as {designation} (“Employee”).
+{effective_date} between {employer_name}, a company incorporated
+under the laws of India, and {employee_name}, employed as {designation}.
 
 1. Purpose and Consideration
 
